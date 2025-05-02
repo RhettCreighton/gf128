@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.5)
 project(gf128 VERSION 0.1.0 LANGUAGES C)
+# Suppress INTERPROCEDURAL_OPTIMIZATION policy warnings
+if(POLICY CMP0069)
+  cmake_policy(SET CMP0069 NEW)
+endif()
 include(GNUInstallDirs)
 
 set(CMAKE_C_STANDARD 99)

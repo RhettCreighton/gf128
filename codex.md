@@ -2,6 +2,50 @@
 
 # GF128 Arithmetic Library
 
+## One-Line Quick Benchmark
+
+From a fresh clone, just run:
+
+```bash
+git clone https://github.com/RhettCreighton/gf128.git \
+  && cd gf128 \
+  && bash bench.sh
+```
+
+This builds all optimized variants (bitwise, table-driven, PCLMUL, AVX2, AVX-512, GFNI) and immediately prints:
+- Single-threaded throughput (sorted by best performer)
+- Full core-count (nproc) multi-threaded throughput
+
+No extra flags required — you’ll see the fastest GF(2^128) path on your machine right away.
+
+### Example Output
+On a 16-core AVX-512/GFNI-capable machine, running `bash bench.sh` produces:
+```
+==> Single-threaded GF(2^128) multiply throughput (Mops/sec)
+gf128_mul8_pclmul_avx512_super      1624.68
+gf128_mul4_pclmul_avx512            1450.84
+gf128_mul2_pclmul_avx2               380.59
+gf128_mul_pclmul_avx2                 91.55
+gf128_mul_pclmul_avx512               77.63
+gf128_mul_pclmul_kara                 62.87
+gf128_mul_pclmul                       4.16
+gf128_mul_table                        4.11
+gf128_mul                              3.97
+gf128_mul_base                         3.28
+
+==> Multi-threaded GF(2^128) multiply throughput (all 16 cores, Mops/sec)
+gf128_mul8_pclmul_avx512_super      9626.94
+gf128_mul4_pclmul_avx512            1426.01
+gf128_mul2_pclmul_avx2               380.23
+gf128_mul_pclmul_avx2                 91.51
+gf128_mul_pclmul_avx512               76.36
+gf128_mul_pclmul_kara                 62.51
+gf128_mul                              4.01
+gf128_mul_table                        3.99
+gf128_mul_pclmul                       3.94
+gf128_mul_base                         3.24
+```
+
 ## Cleaning Up Old Builds
 
 If you have leftover out-of-source build directories (e.g., `build/`, `build_gfni/`, `build_opt/`), you can remove them all at once:
@@ -10,31 +54,6 @@ rm -rf build*/
 ```
 This cleans the workspace so you always start from a fresh build.
 
-## Quick Benchmark
-
-To build and run both single-threaded and multi-threaded GF(2^128) multiplication benchmarks, sorted by throughput, in one command:
-
-```sh
-# from the repository root
-rm -rf build && mkdir build && cd build \
-  && cmake -DCMAKE_BUILD_TYPE=Release \
-           -DUSE_AVX2=ON \
-           -DUSE_AVX512=ON \
-           -DUSE_GFNI=ON \
-           -DENABLE_MICROTUNE=ON .. \
-  && cmake --build . --target bench_mul \
-  && echo "=== Single-threaded results ===" \
-  && ./benchmarks/bench_mul --csv | sort -t, -k2 -nr \
-  && echo "=== Multi-threaded results (all $(nproc) cores) ===" \
-  && ./benchmarks/bench_mul --threads $(nproc) --csv | sort -t, -k2 -nr
-```
-
-This command:
-- Builds the library and `bench_mul` with AVX2, AVX-512, and GFNI enabled.
-- Runs and sorts the single-threaded benchmark (`--csv`).
-- Runs and sorts the multi-threaded benchmark across all cores.
-
-Omit `-DUSE_GFNI=ON` or `-DUSE_AVX512=ON` from the `cmake` command if your CPU lacks GFNI or AVX-512 support.
 
 ## Overview
 This project provides optimized finite field GF(2^128) arithmetic routines in C (C99). Primary focus: high-performance multiplication, addition, and inversion.
