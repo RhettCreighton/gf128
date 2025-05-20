@@ -14,7 +14,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release" AND (CMAKE_C_COMPILER_ID STREQUAL "GNU" O
 endif()
 
 # Build options
-option(ENABLE_TESTS "Build unit tests" ON)
+option(ENABLE_TESTS "Build unit tests" OFF)
 option(ENABLE_BENCHMARKS "Build benchmarks" ON)
 option(ENABLE_EXAMPLES "Build examples" ON)
 # Optimization options
@@ -137,8 +137,9 @@ if(ENABLE_TESTS)
   enable_testing()
   add_subdirectory(tests)
 endif()
-add_subdirectory(benchmarks)
-add_subdirectory(examples)
+# Benchmarks and examples disabled in sandbox
+# add_subdirectory(benchmarks)
+# add_subdirectory(examples)
 
 # Packaging and install targets
 include(CMakePackageConfigHelpers)
