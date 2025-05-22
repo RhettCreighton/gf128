@@ -93,6 +93,20 @@ static inline void gf128_to_le(gf128_t a, uint8_t b[16]) {
     b[14] = (uint8_t)(a.hi >> 48);
     b[15] = (uint8_t)(a.hi >> 56);
 }
+/**
+ * @brief Canonical byte conversion helpers for basefold integration
+ * 
+ * These functions provide a consistent interface for converting between
+ * GF(2^128) elements and byte arrays, abstracting the endianness details.
+ * Used by basefold proof system for mask generation and field element handling.
+ */
+static inline gf128_t gf128_from_bytes(const uint8_t b[16]) {
+    return gf128_from_le(b);
+}
+static inline void gf128_to_bytes(gf128_t a, uint8_t out[16]) {
+    gf128_to_le(a, out);
+}
+
 /* Equality and zero checks */
 static inline bool gf128_is_zero(gf128_t a) {
     return (a.hi == 0) && (a.lo == 0);
